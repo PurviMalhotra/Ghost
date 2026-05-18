@@ -15,8 +15,15 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Ghost helper alive")
 }
 
+func assetHandler(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
+	http.ServeFile(w, r, "./data/test.txt")
+}
+
 func main() {
 	http.HandleFunc("/ping", pingHandler)
+	http.HandleFunc("/asset", assetHandler)
 
 	fmt.Println("Ghost helper running on :8080")
 
