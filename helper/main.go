@@ -1,8 +1,10 @@
 package main
 
+
 import (
 	"fmt"
 	"net/http"
+	"ghost/helper/internal/discovery"
 )
 
 func enableCors(w *http.ResponseWriter) {
@@ -22,8 +24,14 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	go discovery.RegisterService()
+
+	go discovery.DiscoverPeers()
+
 	http.HandleFunc("/ping", pingHandler)
 	http.HandleFunc("/asset", assetHandler)
+	
 
 	fmt.Println("Ghost helper running on :8080")
 
