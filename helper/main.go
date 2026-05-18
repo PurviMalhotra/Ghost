@@ -20,7 +20,7 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 func assetHandler(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 
-	http.ServeFile(w, r, "./data/test.txt")
+	http.ServeFile(w, r, "./data/bread.jpg")
 }
 
 func main() {
