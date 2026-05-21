@@ -38,6 +38,7 @@ func DiscoverPeers() {
 			fmt.Println("Current peers:", Peers)
 
 			go transfer.FetchAssets(peer.Addr, peer.Port)
+			go transfer.FetchAsset(peer.Addr, peer.Port)
 		}
 	}()
 	fmt.Println("Starting peer discovery...")
