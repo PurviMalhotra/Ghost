@@ -1,6 +1,7 @@
 package transfer
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,16 +26,30 @@ func FetchAssets(addr string, port int) {
 
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	var assets []Asset
 
-	fmt.Println("Peer assets:", string(body))
+	err = json.NewDecoder(resp.Body).Decode(&assets)
+
+	if err != nil {
+		fmt.Println("JSON decode failed:", err)
+		return
+	}
+
+	fmt.Println("Peer assets:", assets)
+
+	for _, asset := range assets {
+		fmt.Println("Found asset:", asset.Name)
+
+		go FetchAsset(addr, port, asset.Name)
+	}
 }
 
-func FetchAsset(addr string, port int) {
+func FetchAsset(addr string, port int, name string) {
 	url := fmt.Sprintf(
-		"http://%s:%d/asset",
+		"http://%s:%d/asset?name=%s",
 		addr,
 		port,
+		name,
 	)
 
 	fmt.Println("Downloading asset from:", url)
@@ -48,7 +63,7 @@ func FetchAsset(addr string, port int) {
 
 	defer resp.Body.Close()
 
-	file, err := os.Create("./data/downloaded-bread.jpg")
+	file, err := os.Create("./data/downloaded-" + name)
 
 	if err != nil {
 		fmt.Println("File creation failed:", err)
