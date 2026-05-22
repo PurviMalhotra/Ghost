@@ -39,6 +39,11 @@ func FetchAssets(addr string, port int) {
 
 	for _, asset := range assets {
 		fmt.Println("Found asset:", asset.Name)
+		fmt.Println(
+			"Checking hash:",
+			asset.Name,
+			asset.Hash,
+		)
 
 		if HasHash(asset.Hash) {
 
