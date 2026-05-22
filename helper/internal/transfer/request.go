@@ -9,6 +9,9 @@ import (
 )
 
 func FetchAssets(addr string, port int) {
+
+	fmt.Println("FetchAssets called")
+
 	url := fmt.Sprintf(
 		"http://%s:%d/assets",
 		addr,
@@ -24,6 +27,8 @@ func FetchAssets(addr string, port int) {
 		return
 	}
 
+	fmt.Println("Received response from peer")
+
 	defer resp.Body.Close()
 
 	var assets []Asset
@@ -35,15 +40,11 @@ func FetchAssets(addr string, port int) {
 		return
 	}
 
-	fmt.Println("Peer assets:", assets)
+	fmt.Println("Decoded assets:", assets)
 
 	for _, asset := range assets {
-		fmt.Println("Found asset:", asset.Name)
-		fmt.Println(
-			"Checking hash:",
-			asset.Name,
-			asset.Hash,
-		)
+
+		fmt.Println("Looping asset:", asset.Name)
 
 		if HasHash(asset.Hash) {
 
@@ -54,6 +55,11 @@ func FetchAssets(addr string, port int) {
 
 			continue
 		}
+
+		fmt.Println(
+			"Downloading asset:",
+			asset.Name,
+		)
 
 		go FetchAsset(
 			addr,
