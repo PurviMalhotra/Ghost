@@ -34,18 +34,27 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	file, err := os.Stat("./data/bread.jpg")
+	files, err := os.ReadDir("./data")
 
 	if err != nil {
-		http.Error(w, "File not found", 404)
+		http.Error(w, "Failed to read data directory", 500)
 		return
 	}
 
-	assets := []transfer.Asset{
-		{
-			Name: file.Name(),
-			Size: file.Size(),
-		},
+	var assets []transfer.Asset
+
+	for _, file := range files {
+
+		info, err := file.Info()
+
+		if err != nil {
+			continue
+		}
+
+		assets = append(assets, transfer.Asset{
+			Name: info.Name(),
+			Size: info.Size(),
+		})
 	}
 
 	json.NewEncoder(w).Encode(assets)
