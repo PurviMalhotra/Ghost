@@ -51,9 +51,18 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
+		path := "./data/" + info.Name()
+
+		hash, err := transfer.GenerateHash(path)
+
+		if err != nil {
+			continue
+		}
+
 		assets = append(assets, transfer.Asset{
 			Name: info.Name(),
 			Size: info.Size(),
+			Hash: hash,
 		})
 	}
 

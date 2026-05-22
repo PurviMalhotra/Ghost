@@ -40,11 +40,31 @@ func FetchAssets(addr string, port int) {
 	for _, asset := range assets {
 		fmt.Println("Found asset:", asset.Name)
 
-		go FetchAsset(addr, port, asset.Name)
+		if HasHash(asset.Hash) {
+
+			fmt.Println(
+				"Already cached:",
+				asset.Name,
+			)
+
+			continue
+		}
+
+		go FetchAsset(
+			addr,
+			port,
+			asset.Name,
+			asset.Hash,
+		)
 	}
 }
 
-func FetchAsset(addr string, port int, name string) {
+func FetchAsset(
+	addr string,
+	port int,
+	name string,
+	expectedHash string,
+) {
 	url := fmt.Sprintf(
 		"http://%s:%d/asset?name=%s",
 		addr,
@@ -78,6 +98,22 @@ func FetchAsset(addr string, port int, name string) {
 		fmt.Println("File write failed:", err)
 		return
 	}
+
+	hash, err := GenerateHash("./data/downloaded-" + name)
+
+	if err != nil {
+		fmt.Println("Hash verification failed")
+		return
+	}
+
+	fmt.Println("Downloaded file hash:", hash)
+
+	if hash != expectedHash {
+		fmt.Println("Hash mismatch detected")
+		return
+	}
+
+	fmt.Println("Hash verified successfully")
 
 	fmt.Println("Asset downloaded successfully")
 }
