@@ -69,6 +69,32 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(assets)
 }
 
+func requestHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+
+	enableCors(&w)
+
+	name := r.URL.Query().Get("name")
+
+	path := "./data/" + name
+
+	_, err := os.Stat(path)
+
+	if err == nil {
+
+		fmt.Println("Serving local asset")
+
+		http.ServeFile(w, r, path)
+		return
+	}
+
+	fmt.Println("Asset missing locally")
+
+	http.Error(w, "Asset not found", 404)
+}
+
 func main() {
 
 	go discovery.RegisterService()
@@ -78,6 +104,7 @@ func main() {
 	http.HandleFunc("/ping", pingHandler)
 	http.HandleFunc("/asset", assetHandler)
 	http.HandleFunc("/assets", assetsHandler)
+	http.HandleFunc("/request", requestHandler)
 
 	fmt.Println("Ghost helper running on :8080")
 
