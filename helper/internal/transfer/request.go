@@ -64,7 +64,7 @@ func FetchAsset(
 	port int,
 	name string,
 	expectedHash string,
-) {
+) error {
 	url := fmt.Sprintf(
 		"http://%s:%d/asset?name=%s",
 		addr,
@@ -78,7 +78,7 @@ func FetchAsset(
 
 	if err != nil {
 		fmt.Println("Download failed:", err)
-		return
+		return err
 	}
 
 	defer resp.Body.Close()
@@ -87,7 +87,7 @@ func FetchAsset(
 
 	if err != nil {
 		fmt.Println("File creation failed:", err)
-		return
+		return err
 	}
 
 	defer file.Close()
@@ -96,26 +96,28 @@ func FetchAsset(
 
 	if err != nil {
 		fmt.Println("File write failed:", err)
-		return
+		return err
 	}
 
 	hash, err := GenerateHash("./data/downloaded-" + name)
 
 	if err != nil {
 		fmt.Println("Hash verification failed")
-		return
+		return err
 	}
 
 	fmt.Println("Downloaded file hash:", hash)
 
 	if hash != expectedHash {
 		fmt.Println("Hash mismatch detected")
-		return
+		return err
 	}
 
 	fmt.Println("Hash verified successfully")
 
 	fmt.Println("Asset downloaded successfully")
+
+	return nil
 }
 
 func FindPeerWithAsset(name string) *Peer {
