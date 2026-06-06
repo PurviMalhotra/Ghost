@@ -84,7 +84,7 @@ func requestHandler(
 
 	if err == nil {
 
-		fmt.Println("Serving local asset")
+		fmt.Println("Serving local asset:", name)
 
 		http.ServeFile(w, r, path)
 		return
@@ -92,7 +92,48 @@ func requestHandler(
 
 	fmt.Println("Asset missing locally")
 
-	http.Error(w, "Asset not found", 404)
+	peer := transfer.FindPeerWithAsset(name)
+
+	if peer == nil {
+
+		http.Error(
+			w,
+			"Asset not found",
+			404,
+		)
+
+		return
+	}
+
+	fmt.Println(
+		"Fetching from peer:",
+		peer.Name,
+	)
+
+	err = transfer.FetchAsset(
+		peer.Addr,
+		peer.Port,
+		name,
+	)
+
+	if err != nil {
+
+		http.Error(
+			w,
+			"Peer fetch failed",
+			500,
+		)
+
+		return
+	}
+
+	fmt.Println("Serving downloaded asset")
+
+	http.ServeFile(
+		w,
+		r,
+		path,
+	)
 }
 
 func main() {

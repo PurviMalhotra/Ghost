@@ -117,3 +117,40 @@ func FetchAsset(
 
 	fmt.Println("Asset downloaded successfully")
 }
+
+func FindPeerWithAsset(name string) *Peer {
+
+	for _, peer := range discovery.Peers {
+
+		url := fmt.Sprintf(
+			"http://%s:%d/assets",
+			peer.Addr,
+			peer.Port,
+		)
+
+		resp, err := http.Get(url)
+
+		if err != nil {
+			continue
+		}
+
+		var assets []Asset
+
+		err = json.NewDecoder(resp.Body).Decode(&assets)
+
+		resp.Body.Close()
+
+		if err != nil {
+			continue
+		}
+
+		for _, asset := range assets {
+
+			if asset.Name == name {
+				return &peer
+			}
+		}
+	}
+
+	return nil
+}

@@ -12,8 +12,11 @@ function App() {
 
   return (
     <div>
-      <h1>Ghost Dashboard</h1>
-      <p>{message}</p>
+      <h1>Ghost Test</h1>
+      <img
+        src="/ghost-assets/bread.jpg"
+        width="400"
+      />
     </div>
   );
 }
