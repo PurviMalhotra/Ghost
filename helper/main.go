@@ -92,7 +92,7 @@ func requestHandler(
 
 	fmt.Println("Asset missing locally")
 
-	peer := transfer.FindPeerWithAsset(name)
+	peer := discovery.FindPeerWithAsset(name)
 
 	if peer == nil {
 
@@ -114,6 +114,7 @@ func requestHandler(
 		peer.Addr,
 		peer.Port,
 		name,
+		"",
 	)
 
 	if err != nil {
