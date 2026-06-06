@@ -83,7 +83,7 @@ func FetchAsset(
 
 	defer resp.Body.Close()
 
-	file, err := os.Create("./data/downloaded-" + name)
+	file, err := os.Create("./data/" + name)
 
 	if err != nil {
 		fmt.Println("File creation failed:", err)
@@ -99,7 +99,7 @@ func FetchAsset(
 		return err
 	}
 
-	hash, err := GenerateHash("./data/downloaded-" + name)
+	hash, err := GenerateHash("./data/" + name)
 
 	if err != nil {
 		fmt.Println("Hash verification failed")
