@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"ghost/helper/internal/discovery"
 	"ghost/helper/internal/transfer"
+	"ghost/helper/internal/cache"
 	"net/http"
 	"os"
 )
@@ -34,39 +35,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	files, err := os.ReadDir("./data")
-
-	if err != nil {
-		http.Error(w, "Failed to read data directory", 500)
-		return
-	}
-
-	var assets []transfer.Asset
-
-	for _, file := range files {
-
-		info, err := file.Info()
-
-		if err != nil {
-			continue
-		}
-
-		path := "./data/" + info.Name()
-
-		hash, err := transfer.GenerateHash(path)
-
-		if err != nil {
-			continue
-		}
-
-		assets = append(assets, transfer.Asset{
-			Name: info.Name(),
-			Size: info.Size(),
-			Hash: hash,
-		})
-	}
-
-	json.NewEncoder(w).Encode(assets)
+	json.NewEncoder(w).Encode(cache.AssetIndex)
 }
 
 func requestHandler(
@@ -130,6 +99,8 @@ func requestHandler(
 
 	fmt.Println("Serving downloaded asset")
 
+	cache.RefreshIndex()
+
 	http.ServeFile(
 		w,
 		r,
@@ -138,6 +109,12 @@ func requestHandler(
 }
 
 func main() {
+
+	err := cache.BuildIndex()
+
+	if err != nil {
+		panic(err)
+	}
 
 	go discovery.RegisterService()
 
@@ -150,9 +127,10 @@ func main() {
 
 	fmt.Println("Ghost helper running on :8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8080", nil)
 
 	if err != nil {
 		panic(err)
 	}
+	
 }

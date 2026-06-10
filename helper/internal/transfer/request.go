@@ -115,6 +115,12 @@ func FetchAsset(
 
 	fmt.Println("Hash verified successfully")
 
+	// err = cache.RefreshIndex()
+
+	// if err != nil {
+	// 	fmt.Println("Failed to refresh asset index:", err)
+	// }
+
 	fmt.Println("Asset downloaded successfully")
 
 	return nil
