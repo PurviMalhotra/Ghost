@@ -14,6 +14,15 @@ func DiscoverPeers() {
 
 	go func() {
 		for entry := range entriesCh {
+
+			fmt.Printf(
+				"DEBUG: Host=%s AddrV4=%v AddrV6=%v Port=%d\n",
+				entry.Host,
+				entry.AddrV4,
+				entry.AddrV6,
+				entry.Port,
+			)
+
 			host, _ := os.Hostname()
 
 			if entry.Host == host+".local." {
